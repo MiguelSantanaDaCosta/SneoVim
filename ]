@@ -1,0 +1,107 @@
+-- init.lua
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git", "clone", "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git", lazypath
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  {
+    "goolord/alpha-nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      local alpha = require("alpha")
+      local dashboard = require("alpha.themes.dashboard")
+
+      dashboard.section.header.val = {
+        " ███████╗ █████╗ ███╗   ██╗████████╗ █████╗ ███╗   ██╗ █████╗ ",
+        " ██╔════╝██╔══██╗████╗  ██║╚══██╔══╝██╔══██╗████╗  ██║██╔══██╗",
+        " ███████╗███████║██╔██╗ ██║   ██║   ███████║██╔██╗ ██║███████║",
+        " ╚════██║██╔══██║██║╚██╗██║   ██║   ██╔══██║██║╚██╗██║██╔══██║",
+        " ███████║██║  ██║██║ ╚████║   ██║   ██║  ██║██║ ╚████║██║  ██║",
+        " ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝",
+        "                                                              ",
+        "                      Bem-vindo, Santana                      ",
+      }
+
+      dashboard.section.buttons.val = {
+        dashboard.button("f", "🔍  Buscar Arquivo", ":Telescope find_files<CR>"),
+        dashboard.button("r", "🕘  Recentes", ":Telescope oldfiles<CR>"),
+        dashboard.button("e", "📁  Explorer", ":NvimTreeToggle<CR>"),
+        dashboard.button("q", "🚪  Sair", ":qa<CR>"),
+      }
+
+      dashboard.section.header.opts.hl = "Constant"
+      alpha.setup(dashboard.config)
+    end,
+  },
+
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+  { "neovim/nvim-lspconfig" },
+  { "hrsh7th/nvim-cmp" },
+  { "hrsh7th/cmp-nvim-lsp" },
+  { "L3MON4D3/LuaSnip" },
+  { "saadparwaiz1/cmp_luasnip" },
+  { "nvim-tree/nvim-tree.lua", dependencies = { "nvim-tree/nvim-web-devicons" } },
+  { "nvim-treesitter/playground" },
+  { "windwp/nvim-autopairs" },
+  { "lewis6991/gitsigns.nvim" },
+  { "williamboman/mason.nvim", build = ":MasonUpdate" },
+  { "williamboman/mason-lspconfig.nvim" },
+  { "ellisonleao/gruvbox.nvim", priority = 1000, config = true },
+  { "nvim-telescope/telescope.nvim", tag = "0.1.5", dependencies = { "nvim-lua/plenary.nvim" } },
+  { "folke/which-key.nvim", event = "VeryLazy" },
+  -- DAP (debugger)
+{ "mfussenegger/nvim-dap" },
+{ "rcarriga/nvim-dap-ui", dependencies = { "mfussenegger/nvim-dap" } },
+
+-- LSP + Autocompletar
+{ "neovim/nvim-lspconfig" },
+{ "williamboman/mason.nvim", build = ":MasonUpdate" },
+{ "williamboman/mason-lspconfig.nvim" },
+{ "hrsh7th/nvim-cmp" },
+{ "hrsh7th/cmp-nvim-lsp" },
+{ "L3MON4D3/LuaSnip" },
+{ "saadparwaiz1/cmp_luasnip" },
+
+-- Navegação estilo LunarVim
+{ "folke/which-key.nvim", event = "VeryLazy" },
+{ "nvim-telescope/telescope.nvim", tag = "0.1.5", dependencies = { "nvim-lua/plenary.nvim" } },
+{ "nvim-tree/nvim-tree.lua", dependencies = { "nvim-tree/nvim-web-devicons" } },
+
+  {
+  "ellisonleao/gruvbox.nvim",
+  priority = 1000,
+  config = function()
+    require("gruvbox").setup({
+      contrast = "hard",
+      italic = {
+        strings = false,
+        comments = true,
+        operators = false,
+        folds = true,
+      },
+      overrides = {
+        Normal = { bg = "#1d2021" },
+        NormalNC = { bg = "#1d2021" },
+        SignColumn = { bg = "#1d2021" },
+        VertSplit = { bg = "#1d2021" },
+      }
+    })
+    vim.o.background = "dark"
+    vim.cmd("colorscheme gruvbox")
+  end,
+}
+{ "nvim-tree/nvim-web-devicons" }, -- ícones de arquivos
+{ "norcalli/nvim-colorizer.lua", config = function() require("colorizer").setup() end },
+{ "rcarriga/nvim-notify" }, -- notificações pop-up
+{ "sindrets/diffview.nvim" },        -- Visualizador de diffs com UI bonitona
+{ "tpope/vim-fugitive" },            -- Git em formato vim (usa :Git)
+{ "lewis6991/gitsigns.nvim" },       -- Já tem? Senão, mostra alterações na linha
+
+
+})
+
