@@ -287,6 +287,11 @@ require("lazy").setup({
       })
     end,
   },
+  --Plugins para ENBF
+  {
+  "bfrg/vim-ebnf",
+  ft = "ebnf"
+}
 
   -- Outros plugins essenciais
   { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
@@ -353,3 +358,4 @@ vim.keymap.set('n', '<F5>', function()
   vim.cmd('w')  -- Salva o arquivo antes
   compile_run_cpp()
 end, { desc = "Compilar e executar C++" })
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>:close<CR>', { desc = "Fechar terminal flutuante" })
