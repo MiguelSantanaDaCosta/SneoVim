@@ -1,4 +1,3 @@
-
 -- init.lua
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -304,50 +303,50 @@ require("lazy").setup({
   { "numToStr/Comment.nvim", config = true },
   { "akinsho/toggleterm.nvim", version = "*", config = true },
   
-  -- Suporte para EBNF
-  {
-    "bfrg/vim-ebnf",
-    ft = "ebnf",
-    config = function()
-      vim.filetype.add({
-        extension = {
-          ebnf = "ebnf"
-        }
-      })
-    end
-  },
-
-  -- Suporte para ANTLR (.g4)
-  {
-    "dylon/vim-antlr",
-    ft = "antlr",
-    config = function()
-      vim.filetype.add({
-        extension = {
-          g4 = "antlr"
-        }
-      })
-      
-      -- Configuração opcional do LSP para ANTLR
-      require('lspconfig').antlrls.setup({
-        filetypes = {"antlr"},
-        root_dir = require('lspconfig.util').root_pattern("*.g4"),
-        cmd = {"antlr-language-server"}, -- Necessário instalar
-      })
-    end
-  },
-
-  -- Treesitter para ANTLR (se disponível)
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = {
-        -- Outras linguagens...
-        "antlr" -- Para suporte a arquivos .g4
+-- Suporte para EBNF
+{
+  "vim-scripts/ebnf.vim",
+  ft = "ebnf",
+  init = function()  -- Mudamos de 'config' para 'init' pois é apenas para filetype
+    vim.filetype.add({
+      extension = {
+        ebnf = "ebnf"
       }
-    }
-  },
+    })
+  end
+},
 
+-- Suporte para ANTLR (.g4)
+{
+  "dylon/vim-antlr",
+  ft = "antlr",
+  init = function()  -- 'init' é mais adequado para configurações de filetype
+    vim.filetype.add({
+      extension = {
+        g4 = "antlr"
+      }
+    })
+  end,
+  config = function()  -- Separamos a configuração do LSP
+    require('lspconfig').antlrls.setup({
+      filetypes = {"antlr"},
+      root_dir = require('lspconfig.util').root_pattern("*.g4"),
+      cmd = {"antlr-language-server"},
+      -- Configurações adicionais do LSP:
+      settings = {
+        antlr = {
+          grammarDevelopment = {
+            useRemoteService = false,
+            format = {
+              indentStyle = "Tab",
+              tabWidth = 2
+            }
+          }
+        }
+      }
+    })
+  end
+},
 
   -- Tema
   {
@@ -374,7 +373,7 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.splitright = true
-vim.opt.splitbelow = truei
+vim.opt.splitbelow = true
 vim.g.mapleader = " "  -- Tecla Espaço como leader
 vim.g.maplocalleader = " "  -- Leader para configurações locais
 -- Atalhos adicionais
