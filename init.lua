@@ -1,3 +1,4 @@
+
 -- init.lua
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -7,6 +8,13 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
+-- Configuração de filetypes
+vim.filetype.add({
+  extension = {
+    ebnf = "ebnf",
+    g4 = "antlr"
+  }
+})
 
 require("lazy").setup({
   -- Dashboard (Alpha-nvim)
@@ -287,11 +295,6 @@ require("lazy").setup({
       })
     end,
   },
-  --Plugins para ENBF
-  {
-  "bfrg/vim-ebnf",
-  ft = "ebnf"
-}
 
   -- Outros plugins essenciais
   { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
@@ -301,6 +304,51 @@ require("lazy").setup({
   { "numToStr/Comment.nvim", config = true },
   { "akinsho/toggleterm.nvim", version = "*", config = true },
   
+  -- Suporte para EBNF
+  {
+    "bfrg/vim-ebnf",
+    ft = "ebnf",
+    config = function()
+      vim.filetype.add({
+        extension = {
+          ebnf = "ebnf"
+        }
+      })
+    end
+  },
+
+  -- Suporte para ANTLR (.g4)
+  {
+    "dylon/vim-antlr",
+    ft = "antlr",
+    config = function()
+      vim.filetype.add({
+        extension = {
+          g4 = "antlr"
+        }
+      })
+      
+      -- Configuração opcional do LSP para ANTLR
+      require('lspconfig').antlrls.setup({
+        filetypes = {"antlr"},
+        root_dir = require('lspconfig.util').root_pattern("*.g4"),
+        cmd = {"antlr-language-server"}, -- Necessário instalar
+      })
+    end
+  },
+
+  -- Treesitter para ANTLR (se disponível)
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = {
+      ensure_installed = {
+        -- Outras linguagens...
+        "antlr" -- Para suporte a arquivos .g4
+      }
+    }
+  },
+
+
   -- Tema
   {
     "ellisonleao/gruvbox.nvim",
@@ -358,4 +406,3 @@ vim.keymap.set('n', '<F5>', function()
   vim.cmd('w')  -- Salva o arquivo antes
   compile_run_cpp()
 end, { desc = "Compilar e executar C++" })
-vim.keymap.set('t', '<Esc>', '<C-\\><C-n>:close<CR>', { desc = "Fechar terminal flutuante" })
