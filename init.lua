@@ -1,4 +1,4 @@
--- init.lua
+-- Configuração do Lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -7,6 +7,7 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
+
 -- Configuração de filetypes
 vim.filetype.add({
   extension = {
@@ -138,6 +139,32 @@ require("lazy").setup({
       map("n", "<leader>fe", ":Telescope file_browser<CR>", { desc = "File explorer" })
       map("n", "<leader>fs", ":Telescope session-lens search_session<CR>", { desc = "Search sessions" })
     end,
+  },
+
+  -- Verificação de Sintaxe em Tempo Real
+  {
+    "mfussenegger/nvim-lint",
+    config = function()
+      require("lint").linters_by_ft = {
+        python = {"flake8"},
+        cpp = {"clangtidy"},
+        java = {"checkstyle"},
+        javascript = {"eslint_d"},
+        typescript = {"eslint_d"},
+        lua = {"luacheck"},
+        sh = {"shellcheck"},
+        rust = {"cargo"},
+        antlr = {"antlr4"},
+        ebnf = {"bnfc"}
+      }
+
+      -- Executa ao salvar e ao abrir o arquivo
+      vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
+        callback = function()
+          require("lint").try_lint()
+        end,
+      })
+    end
   },
 
   -- LSP e Autocompletar
@@ -300,53 +327,114 @@ require("lazy").setup({
   { "nvim-tree/nvim-tree.lua", config = true },
   { "lewis6991/gitsigns.nvim", config = true },
   { "windwp/nvim-autopairs", config = true },
-  { "numToStr/Comment.nvim", config = true },
+  
+  -- Comentários estilo NetBeans
+  {
+    "numToStr/Comment.nvim",
+    config = function()
+      require("Comment").setup({
+        toggler = {
+          line = "<C-/>",     -- Ctrl+/ para linha
+          block = "<C-S-/>",  -- Ctrl+Shift+/ para bloco
+        },
+        opleader = {
+          line = "<C-/>",
+          block = "<C-S-/>",
+        },
+      })
+    end,
+  },
+
+  -- +++ ADICIONADO: Linhas de indentação estilo VS Code +++
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    config = function()
+      require("ibl").setup({
+        indent = {
+          char = "▏",  -- Caractere vertical fino
+          tab_char = "▏",
+        },
+        whitespace = {
+          remove_blankline_trail = true,
+        },
+        scope = {
+          enabled = true,
+          show_start = false,
+          show_end = false,
+          highlight = { "GruvboxGray" },
+          priority = 500,
+        },
+        exclude = {
+          filetypes = {
+            "dashboard",
+            "help",
+            "terminal",
+            "lazy",
+            "lspinfo",
+            "TelescopePrompt",
+            "TelescopeResults",
+            "mason",
+            "alpha",
+            "NvimTree",
+          },
+        },
+      })
+
+      -- Cores personalizadas para combinar com o tema Gruvbox
+      vim.cmd([[
+        highlight! IblIndent guifg=#3c3836 gui=nocombine
+        highlight! IblScope guifg=#7c6f64 gui=nocombine
+      ]])
+    end
+  },
+  
   { "akinsho/toggleterm.nvim", version = "*", config = true },
   
--- Suporte para EBNF
-{
-  "vim-scripts/ebnf.vim",
-  ft = "ebnf",
-  init = function()  -- Mudamos de 'config' para 'init' pois é apenas para filetype
-    vim.filetype.add({
-      extension = {
-        ebnf = "ebnf"
-      }
-    })
-  end
-},
+  -- Suporte para EBNF
+  {
+    "vim-scripts/ebnf.vim",
+    ft = "ebnf",
+    init = function()
+      vim.filetype.add({
+        extension = {
+          ebnf = "ebnf",
+          bnfc = "ebnf"  -- Opcional para arquivos BNFC
+        }
+      })
+    end
+  },
 
--- Suporte para ANTLR (.g4)
-{
-  "dylon/vim-antlr",
-  ft = "antlr",
-  init = function()  -- 'init' é mais adequado para configurações de filetype
-    vim.filetype.add({
-      extension = {
-        g4 = "antlr"
-      }
-    })
-  end,
-  config = function()  -- Separamos a configuração do LSP
-    require('lspconfig').antlrls.setup({
-      filetypes = {"antlr"},
-      root_dir = require('lspconfig.util').root_pattern("*.g4"),
-      cmd = {"antlr-language-server"},
-      -- Configurações adicionais do LSP:
-      settings = {
-        antlr = {
-          grammarDevelopment = {
-            useRemoteService = false,
-            format = {
-              indentStyle = "Tab",
-              tabWidth = 2
+  -- Suporte para ANTLR (.g4)
+  {
+    "dylon/vim-antlr",
+    ft = "antlr",
+    init = function()
+      vim.filetype.add({
+        extension = {
+          g4 = "antlr"
+        }
+      })
+    end,
+    config = function()
+      require('lspconfig').antlrls.setup({
+        filetypes = {"antlr"},
+        root_dir = require('lspconfig.util').root_pattern("*.g4"),
+        cmd = {"antlr-language-server"},
+        settings = {
+          antlr = {
+            grammarDevelopment = {
+              useRemoteService = false,
+              format = {
+                indentStyle = "Tab",
+                tabWidth = 2
+              }
             }
           }
         }
-      }
-    })
-  end
-},
+      })
+    end
+  },
 
   -- Tema
   {
@@ -376,12 +464,26 @@ vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.g.mapleader = " "  -- Tecla Espaço como leader
 vim.g.maplocalleader = " "  -- Leader para configurações locais
+
 -- Atalhos adicionais
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
 vim.keymap.set("n", "<leader>tt", ":ToggleTerm<CR>", { desc = "Toggle terminal" })
 
+-- Navegação entre erros
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+
+-- Configuração de exibição de erros
+vim.diagnostic.config({
+  virtual_text = {
+    prefix = "●", -- Símbolo antes da mensagem
+    spacing = 2,
+  },
+  signs = true,
+  update_in_insert = false,
+})
+
 -- Configuração para compilar e executar C++ com F5
--- No final do seu init.lua (fora do bloco require("lazy").setup)
 local function compile_run_cpp()
   local filename = vim.fn.expand('%:p')  -- Caminho completo do arquivo
   local output = filename:gsub('.cpp$', '')  -- Remove extensão .cpp
