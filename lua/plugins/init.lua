@@ -1,25 +1,16 @@
-local M = {}
+local config = require("config")
 
-function M.setup()
+-- Carrega plugins core
+local plugins = {}
+for _, plugin in ipairs(config.settings.core_plugins) do
+  table.insert(plugins, require("plugins.core." .. plugin))
 end
 
-return {
-  -- Tema deve vir primeiro
-  { import = "plugins.core.gruvbox" },  -- Movido para o topo e removida a duplicação
-  
-  -- Plugins principais
-  { import = "plugins.core.alpha" },       -- Dashboard
-  { import = "plugins.core.session" },     -- Gerenciamento de sessão (antes do telescope)
-  { import = "plugins.core.telescope" },   -- Navegação e busca
-  { import = "plugins.core.lint" },        -- Verificação de sintaxe
-  { import = "plugins.core.lsp" },         -- LSP e autocompletar
-  { import = "plugins.core.treesitter" },  -- Syntax highlighting
-  { import = "plugins.core.tools" },       -- Ferramentas diversas
-  { import = "plugins.core.gitsigns" },    -- Git signs
-  { import = "plugins.core.which-key" },   -- Keybindings helper
-  { import = "plugins.core.comment" },     -- Commenting
-  { import = "plugins.core.autopairs" },   -- Corrigido espaçamento
-  
-    -- Suporte a linguagens específicas
-  { import = "plugins.languages" },
-}
+-- Carrega plugins de linguagem
+for lang, settings in pairs(config.settings.languages) do
+  if settings.plugin then
+    table.insert(plugins, require("plugins.languages." .. lang))
+  end
+end
+
+return plugins
