@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# Diretório base da configuração do Neovim
+NVIM_CONFIG="$HOME/.config/nvim"
+
+# Verificar se o diretório de linguagens existe
+LANG_DIR="$NVIM_CONFIG/lua/plugins/languages"
+mkdir -p "$LANG_DIR"
+
+# Função para adicionar nova linguagem
+add_language() {
+    local lang="$1"
+    local plugin="$2"
+    local lsp="$3"
+    
+    # Arquivo de configuração da linguagem
+    local lang_file="$LANG_DIR/$lang.lua"
+    
+    # Criar arquivo de configuração se não existir
+    if [[ ! -f "$lang_file" ]]; then
+        cat > "$lang_file" <<EOF
+return {
+  {
+    "$plugin",
+    ft = "$lang",
+    config = function()
+      -- Configurações específicas para $lang
+    end
+  }
+}
+EOF
+        echo "✅ Created $lang.lua"
+    else
+        echo "ℹ️ $lang.lua already exists"
+    fi
+    
+    # Adicionar ao config.lua
+    local config_file="$NVIM_CONFIG/lua/config.lua"
+    
+    if grep -q "languages.$lang" "$config_file"; then
+        echo "ℹ️ $lang already in config.lua"
+    else
+        # Adicionar antes do último fechamento de chaves
+        sed -i '' "/return M/ i \\
+M.add_language(\"$lang\", \"$plugin\", \"$lsp\")" "$config_file"
+        echo "✅ Added $lang to config.lua"
+    fi
+    
+    # Adicionar LSP se especificado
+    if [[ -n "$lsp" ]]; then
+        # Adicionar ao mason-lspconfig em lsp.lua
+        local lsp_file="$NVIM_CONFIG/lua/plugins/core/lsp.lua"
+        
+        if grep -q "\"$lsp\"" "$lsp_file"; then
+            echo "ℹ️ $lsp LSP already in lsp.lua"
+        else
+            sed -i '' "/ensure_installed = {/ a \\
+          \"$lsp\"," "$lsp_file"
+            echo "✅ Added $lsp to LSP install list"
+        fi
+    fi
+    
+    echo "🎉 Language $lang added successfully!"
+    echo "Restart Neovim to apply changes"
+}
+
+# Função para remover linguagem
+remove_language() {
+    local lang="$1"
+    
+    # Remover arquivo de configuração
+    local lang_file="$LANG_DIR/$lang.lua"
+    if [[ -f "$lang_file" ]]; then
+        rm "$lang_file"
+        echo "✅ Removed $lang.lua"
+    else
+        echo "ℹ️ $lang.lua not found"
+    fi
+    
+    # Remover do config.lua
+    local config_file="$NVIM_CONFIG/lua/config.lua"
+    sed -i '' "/M.add_language(\"$lang\"/d" "$config_file"
+    echo "✅ Removed $lang from config.lua"
+    
+    echo "🗑️ Language $lang removed successfully!"
+}
+
+# Menu principal
+case "$1" in
+    add)
+        if [[ $# -lt 3 ]]; then
+            echo "Usage: nvim-lang add <language> <plugin> [lsp]"
+            exit 1
+        fi
+        add_language "$2" "$3" "$4"
+        ;;
+    remove)
+        if [[ $# -lt 2 ]]; then
+            echo "Usage: nvim-lang remove <language>"
+            exit 1
+        fi
+        remove_language "$2"
+        ;;
+    list)
+        echo "Installed languages:"
+        ls "$LANG_DIR" | sed 's/\.lua//'
+        ;;
+    *)
+        echo "Neovim Language Manager"
+        echo "Commands:"
+        echo "  add <language> <plugin> [lsp]  - Add a new language"
+        echo "  remove <language>              - Remove a language"
+        echo "  list                           - List installed languages"
+        exit 1
+        ;;
+esac
