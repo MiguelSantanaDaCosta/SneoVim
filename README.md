@@ -1,6 +1,12 @@
 # SneoVim - Configuração Neovim para Produtividade Extrema
 
-![SneoVim Demo](logo.png)
+        [[ ███████╗ █████╗ ███╗   ██╗████████╗ █████╗ ███╗   ██╗ █████╗ ]],
+        [[ ██╔════╝██╔══██╗████╗  ██║╚══██╔══╝██╔══██╗████╗  ██║██╔══██╗]],
+        [[ ███████╗███████║██╔██╗ ██║   ██║   ███████║██╔██╗ ██║███████║]],
+        [[ ╚════██║██╔══██║██║╚██╗██║   ██║   ██╔══██║██║╚██╗██║██╔══██║]],
+        [[ ███████║██║  ██║██║ ╚████║   ██║   ██║  ██║██║ ╚████║██║  ██║]],
+        [[ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝]],
+
 
 Uma configuração Neovim moderna e altamente otimizada projetada para desenvolvedores que buscam produtividade máxima. SneoVim combina os melhores plugins com uma configuração inteligente para oferecer uma experiência de desenvolvimento fluida e poderosa.
 
