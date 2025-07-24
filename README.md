@@ -118,7 +118,8 @@ Para personalizar o SneoVim:
 Como Adicionar Novas Linguagens ao SneoVim
 Adicionar suporte a novas linguagens no SneoVim é simples e rápido graças ao nosso sistema de gerenciamento CLI. Siga estes passos:
 
-Método 1: Usando o utilitário nvim-lang (recomendado)
+## Método 1:
+-->Usando o utilitário nvim-lang (recomendado)
 Passo a passo:
 Instale o utilitário (se ainda não tiver feito):
 
@@ -137,7 +138,7 @@ Onde:
 
 <lsp>: Servidor LSP para a linguagem (opcional)
 
-Exemplos:
+## Exemplos:
 Para Python:
 
 bash
@@ -156,17 +157,20 @@ bash
 nvim-lang add markdown nvim-treesitter
 Reinicie o Neovim para carregar as novas configurações
 
-Método 2: Adicionando manualmente
+##Método 2: 
+-->Adicionando manualmente
 Passo a passo:
 Adicione a linguagem ao config.lua:
 Edite ~/.config/nvim/lua/config.lua e adicione:
 
-lua
+-->lua
 M.add_language("go", "nvim-treesitter", "gopls")
 Crie um arquivo de configuração para a linguagem:
 Crie ~/.config/nvim/lua/plugins/languages/go.lua com:
 
+
 lua
+```
 return {
   {
     "nvim-treesitter",
@@ -180,28 +184,36 @@ return {
     end
   }
 }
+```
 Adicione o LSP ao arquivo de configuração (se aplicável):
 Em ~/.config/nvim/lua/plugins/core/lsp.lua, adicione:
-
+```
 lua
 lspconfig.gopls.setup({
   capabilities = capabilities,
   filetypes = {"go"},
 })
-Reinicie o Neovim
+```
+## Reinicie o Neovim
 
 Instalando dependências
 Para algumas linguagens, você precisará instalar dependências externas:
 
-Para Python:
+-->Para Python:
 bash
+```
 pip install pyright
-Para Go:
+```
+-->Para Go:
 bash
+```
 go install golang.org/x/tools/gopls@latest
-Para Rust:
+```
+-->Para Rust:
 bash
+```
 rustup component add rust-analyzer
+```
 Configurações Avançadas
 Para personalizar ainda mais o suporte a uma linguagem:
 
@@ -213,6 +225,7 @@ Para configurações específicas do LSP, edite lua/plugins/core/lsp.lua
 
 Exemplo de configuração avançada para Python:
 lua
+```
 lspconfig.pyright.setup({
   capabilities = capabilities,
   filetypes = {"python"},
@@ -226,11 +239,13 @@ lspconfig.pyright.setup({
     }
   }
 })
-Linguagens Suportadas
+```
+## Linguagens Suportadas
 Você pode ver todas as linguagens instaladas com:
-
 bash
+```
 nvim-lang list
+```
 Dicas
 Use :TSInstall <linguagem> para instalar suporte do Treesitter
 
