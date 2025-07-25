@@ -31,3 +31,13 @@ map('n', '<F5>', function()
   vim.cmd('w')  -- Salva o arquivo antes
   compile_run_cpp()
 end, { desc = "Compilar e executar C++" })
+
+-- Atalhos para TomEE
+vim.keymap.set('n', '<leader>tes', '<cmd>TomeeStart<CR>', { desc = "Iniciar TomEE" })
+vim.keymap.set('n', '<leader>tet', '<cmd>TomeeStop<CR>', { desc = "Parar TomEE" })
+vim.keymap.set('n', '<leader>ted', '<cmd>TomeeDeploy<CR>', { desc = "Fazer deploy no TomEE" })
+vim.keymap.set('n', '<leader>ter', '<cmd>TomeeRestart<CR>', { desc = "Reiniciar TomEE" })
+
+-- Atalhos para desenvolvimento Java EE
+vim.keymap.set('n', '<leader>jbc', '<cmd>!mvn clean package<CR>', { desc = "Compilar projeto Java" })
+vim.keymap.set('n', '<leader>jbt', '<cmd>!mvn test<CR>', { desc = "Executar testes Java" })

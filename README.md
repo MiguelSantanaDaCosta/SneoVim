@@ -271,7 +271,127 @@ Rust (rust_analyzer)
 
 JavaScript/TypeScript (tsserver)
 
+### JAVA E TOMEE
+🚀 Desenvolvimento Java EE com Apache TomEE
+O SneoVim oferece suporte completo para desenvolvimento de aplicações Java EE utilizando o Apache TomEE, incluindo implantação, gerenciamento de servidor e depuração integrada.
 
+Configuração Inicial
+Instale as dependências:
+
+bash
+```
+sudo apt install openjdk-17-jdk maven
+wget https://repo.maven.apache.org/maven2/org/apache/tomee/apache-tomee/9.1.0/apache-tomee-9.1.0-webprofile.tar.gz
+tar -xvzf apache-tomee-*.tar.gz
+mv apache-tomee-* ~/tomee
+```
+-->Adicione suporte ao Java EE:
+
+bash
+```
+nvim-lang add java nvim-jdtls jdtls
+nvim-lang add tomee vim-tomee
+```
+Comandos Essenciais
+Comando	Atalho	Descrição
+*Iniciar TomEE	<leader>tes	Inicia o servidor TomEE
+*Parar TomEE	<leader>tet	Para o servidor TomEE
+*Reiniciar TomEE	<leader>ter	Reinicia o servidor TomEE
+*Fazer deploy	<leader>ted	Compila e faz deploy da aplicação
+*Depurar classe teste	<leader>dbc	Depura uma classe de teste
+*Depurar método	<leader>dbm	Depura o método atual
+*Depurar aplicação	<leader>dbl	Conecta ao TomEE em modo depuração
+*Toggle breakpoint	<leader>dbt	Adiciona/remove breakpoint
+# Fluxo de Trabalho
+Crie um novo projeto:
+
+bash
+```
+mvn archetype:generate \
+  -DarchetypeGroupId=org.apache.tomee.maven \
+  -DarchetypeArtifactId=tomee-webapp-archetype \
+  -DarchetypeVersion=9.0.0 \
+  -DgroupId=com.example \
+  -DartifactId=my-rest-api
+```
+-->Desenvolva sua API REST:
+```
+java
+@Path("/hello")
+public class HelloResource {
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String hello() {
+        return "Olá do TomEE!";
+    }
+}
+```
+-->Implante e teste:
+bash
+```
+<leader>tes   # Inicia o TomEE
+<leader>ted   # Faz deploy da aplicação
+Acesse sua API:
+http://localhost:8080/my-rest-api/rest/hello
+```
+Depuração Avançada
+Configure o TomEE para modo debug (edite ~/tomee/bin/catalina.sh):
+
+bash
+```
+JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=n"
+CATALINA_OPTS="$CATALINA_OPTS $JPDA_OPTS"
+```
+-->Inicie o TomEE em modo debug:
+bash
+```
+<leader>tes
+Adicione breakpoints com <leader>dbt
+```
+Conecte o depurador:
+
+bash
+<leader>dbl
+Controle a execução:
+
+<leader>dbc: Continuar
+
+<leader>dbs: Passar por cima (step over)
+
+<leader>dbi: Entrar no método (step into)
+
+Dicas de Desenvolvimento
+Hot Reload: Adicione OpenWebBeans ao pom.xml:
+```
+xml
+<dependency>
+    <groupId>org.apache.openwebbeans</groupId>
+    <artifactId>openwebbeans-web</artifactId>
+    <version>2.0.28</version>
+</dependency>
+```
+#Configuração BD: Adicione ao tomee.xml:
+```
+xml
+<Resource id="myDataSource" type="DataSource">
+  JdbcDriver org.h2.Driver
+  JdbcUrl jdbc:h2:mem:test;DB_CLOSE_DELAY=-1
+</Resource>
+Monitoramento: Acesse métricas em:
+http://localhost:8080/api/jolokia
+
+Solução de Problemas
+TomEE não inicia:
+
+bash
+chmod +x ~/tomee/bin/*.sh
+Aplicação não implantada:
+Verifique o <finalName> no pom.xml e o diretório ~/tomee/webapps
+
+Problemas de depuração:
+Verifique a porta 5005 e se o JPDA_OPTS está configurado
+
+```
 ## Contribuição
 
 Contribuições são bem-vindas! Siga estes passos:
